@@ -24,8 +24,8 @@ $GLOBALS["mysql"] = [
 $routers = new Routers();
 
 // Pegando as rotas
-foreach ($KD_SETTINGS["routers"] as $path => $controller) {
-  $routers->setRouter($path, $controller);
+foreach ($KD_SETTINGS["routers"] as $url => $settings) {
+  $routers->setRouter($url, $settings["path"], $settings["class"]);
 }
 
 $url = $_GET["url"] ?? "/";

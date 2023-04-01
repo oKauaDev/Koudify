@@ -2,6 +2,8 @@
 
 namespace Routers;
 
+use Exception;
+
 class Routers
 {
   private string $base = "";
@@ -21,17 +23,21 @@ class Routers
    */
   public function setRouter(
     string $url,
+    string $path,
     string $className,
   ): void {
     $url = rtrim($this->base, "/") . "/" . ltrim($url, "/");
-    $this->routes[$url] = $className;
+    $this->routes[$url] = [
+      "class" => $className,
+      "path" => $path
+    ];
   }
 
   public function exec(string $url): bool
   {
     // Carrega todos os controllers.
     $controllersDir = realpath('../controllers/');
-    $this->loadControllers($controllersDir);
+
     // Pegando o body
     $method = $_SERVER['REQUEST_METHOD'] ?? "GET";
     $body = [];
@@ -41,7 +47,12 @@ class Routers
 
     $url = rtrim($this->base, "/") . "/" . ltrim($url, "/");
     if (isset($this->routes)) {
-      foreach ($this->routes as $route => $callback) {
+      foreach ($this->routes as $route => $urlSettings) {
+        $file_path = $controllersDir . "/" . $urlSettings["path"] . ".php";
+        if (!file_exists($file_path)) {
+          throw new Exception("File $file_path not exists");
+        }
+        require_once($file_path);
         // Substitui as partes dinâmicas da rota por uma expressão regular
         $pattern = preg_replace("/:[\w]+/", "([\w-]+)", $route);
         $pattern = "/^" . str_replace("/", "\/", $pattern) . "$/";
@@ -58,7 +69,7 @@ class Routers
             $array_params[] = $param;
           }
           $token = $this->getBearerToken();
-          $class = new $callback($token, $body, $array_params);
+          $class = new $urlSettings["class"]($token, $body, $array_params);
           $class->onLoad();
           return !!$class;
         }
@@ -82,18 +93,6 @@ class Routers
     }
 
     return $route_parts;
-  }
-
-  /**
-   * @param string $folder
-   * 
-   * @return void
-   */
-  private function loadControllers(string $folder): void
-  {
-    foreach (glob($folder . '/*.php') as $file) {
-      require_once $file;
-    }
   }
 
   /**

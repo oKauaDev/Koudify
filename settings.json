@@ -1,5 +1,8 @@
 {
   "routers": {
-    "/": "MainController"
+    "/": {
+      "class": "MainController",
+      "path": "MainController"
+    }
   }
 }
