@@ -70,11 +70,13 @@ class Mysql
    * @param int|null $cursorOffset
    */
   public function fecth(
-    PDOStatement $stmt,
+    string $query,
+    array $params = [],
     int $mode = PDO::FETCH_DEFAULT,
     int|null $cursorOrientation = PDO::FETCH_ORI_NEXT,
     int|null $cursorOffset = 0
   ): mixed {
+    $stmt = $this->execute($query, $params);
     return $stmt->fetch($mode, $cursorOrientation, $cursorOffset);
   }
 
@@ -83,8 +85,10 @@ class Mysql
    * @param int $mode
    */
   public function fecthAll(
-    PDOStatement $stmt,
+    string $query,
+    array $params = [],
   ): array {
+    $stmt = $this->execute($query, $params);
     return $stmt->fetchAll();
   }
 

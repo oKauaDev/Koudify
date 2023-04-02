@@ -1,7 +1,5 @@
 RewriteEngine On
 
-RewriteRule ^$ koudify_framework/ [L]
-
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+RewriteRule ^(.*)$ koudify_framework/index.php?url=$1 [QSA,L]

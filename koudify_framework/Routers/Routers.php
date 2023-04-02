@@ -23,14 +23,10 @@ class Routers
    */
   public function setRouter(
     string $url,
-    string $path,
-    string $className,
+    array $settings
   ): void {
     $url = rtrim($this->base, "/") . "/" . ltrim($url, "/");
-    $this->routes[$url] = [
-      "class" => $className,
-      "path" => $path
-    ];
+    $this->routes[$url] = $settings;
   }
 
   public function exec(string $url): bool
@@ -52,26 +48,39 @@ class Routers
         if (!file_exists($file_path)) {
           throw new Exception("File $file_path not exists");
         }
-        require_once($file_path);
         // Substitui as partes dinâmicas da rota por uma expressão regular
         $pattern = preg_replace("/:[\w]+/", "([\w-]+)", $route);
         $pattern = "/^" . str_replace("/", "\/", $pattern) . "$/";
 
         // Verifica se a URL bate com a rota
         if (preg_match($pattern, $url, $params)) {
-          array_shift($params);
-          $params = (array) $params;
-          $routeKeys = $this->getRouteParts($route);
-          $array_params = [];
-          foreach ($params as $index => $param) {
-            $key = $routeKeys[$index];
-            $array_params[$key] = $param;
-            $array_params[] = $param;
+          $requests = [];
+          foreach ($urlSettings["request"] as $r) {
+            $requests[] = strtoupper($r);
           }
-          $token = $this->getBearerToken();
-          $class = new $urlSettings["class"]($token, $body, $array_params);
-          $class->onLoad();
-          return !!$class;
+          if (in_array($method, $requests)) {
+            array_shift($params);
+            $params = (array) $params;
+            $routeKeys = $this->getRouteParts($route);
+            $array_params = [];
+            foreach ($params as $index => $param) {
+              $key = $routeKeys[$index];
+              $array_params[$key] = $param;
+              $array_params[] = $param;
+            }
+            require_once($file_path);
+            $token = $this->getBearerToken();
+            $class = new $urlSettings["class"]($token, $body, $array_params);
+            $class->onLoad();
+            return !!$class;
+          } else {
+            $retorno = [
+              "code" => 405,
+              "message" => "[FRAMEWORK] This page does not receive the request method: $method"
+            ];
+            http_response_code(405);
+            echo json_encode($retorno);
+          }
         }
       }
     }

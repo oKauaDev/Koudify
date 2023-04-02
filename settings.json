@@ -2,7 +2,8 @@
   "routers": {
     "/": {
       "class": "MainController",
-      "path": "MainController"
+      "path": "Main/MainController",
+      "request": ["post", "put"]
     }
   }
 }

@@ -2,24 +2,16 @@
 
 namespace Controllers;
 
+require_once "Models.php";
+
 use Security\BSP;
 use Security\JKT;
 use Security\PEK;
+use Controllers\Models;
 use Exception;
 
-class ControllerBase
+class ControllerBase implements Models
 {
-
-  public const ERROR_200_OK = 200; // OK
-  public const ERROR_201_CREATED = 201; // Criado
-  public const ERROR_204_NO_CONTENT = 204; // Sem conteúdo
-  public const ERROR_400_BAD_REQUEST = 400; // Requisição inválida
-  public const ERROR_401_UNAUTHORIZED = 401; // Não autorizado
-  public const ERROR_403_FORBIDDEN = 403; // Proibido
-  public const ERROR_404_NOT_FOUND = 404; // Não encontrado
-  public const ERROR_405_METHOD_NOT_ALLOWED = 405; // Método não permitido
-  public const ERROR_409_CONFLICT = 409; // Conflito
-  public const ERROR_500_INTERNAL_SERVER_ERROR = 500; // Erro interno do servidor
 
   private ?string $token = null;
   private ?array $body = null;
@@ -66,6 +58,7 @@ class ControllerBase
   {
     if (is_array($message)) {
       $message = json_encode($message);
+      header('Content-Type: application/json');
     }
     echo $message . PHP_EOL;
   }
@@ -81,6 +74,7 @@ class ControllerBase
     bool $exit = true
   ): void {
     http_response_code($error);
+    header('Content-Type: application/json');
     echo $log;
     if ($exit)
       exit;
@@ -151,6 +145,11 @@ class ControllerBase
     return $this->getJsonKoudifyToken();
   }
 
+  public function getRequestMethod(): string
+  {
+    return $_SERVER['REQUEST_METHOD'];
+  }
+
   public function getPasswordEncriptionKoudify(): PEK
   {
     return $this->security["PEK"];
@@ -217,6 +216,19 @@ class ControllerBase
   public function getLoadedPlugins(): array
   {
     return $this->plugins;
+  }
+
+  public function validateData(string $date, string|array $regexp): bool
+  {
+    if (is_array($regexp)) {
+      foreach ($regexp as $rgs) {
+        return !!preg_match($rgs, $date);
+      }
+    } else {
+      return !!preg_match($regexp, $date);
+    }
+
+    return false;
   }
 
   /**

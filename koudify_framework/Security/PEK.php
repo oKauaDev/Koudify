@@ -73,7 +73,7 @@ class PEK
     return $nonce . $cipher . $tag;
   }
 
-  public function base124_decode(string $date): string
+  private function base124_decode(string $date): string
   {
 
     $nonce = substr($date, 0, 12);

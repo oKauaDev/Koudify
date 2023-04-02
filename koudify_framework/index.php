@@ -25,10 +25,9 @@ $routers = new Routers();
 
 // Pegando as rotas
 foreach ($KD_SETTINGS["routers"] as $url => $settings) {
-  $routers->setRouter($url, $settings["path"], $settings["class"]);
+  $routers->setRouter($url, $settings);
 }
 
 $url = $_GET["url"] ?? "/";
-
 //Executando as rotass
 $routers->exec($url);
