@@ -99,6 +99,14 @@ class ControllerBase implements Models
   /**
    * @return array
    */
+  public function getFiles(): array
+  {
+    return $_FILES['file'] ?? [];
+  }
+
+  /**
+   * @return array
+   */
   public function getParams(): array
   {
     return $this->params;
