@@ -8,9 +8,9 @@ class BSP
 {
   public function check_sql_injection(string $sql): bool
   {
-    $keywords = array('ALTER', 'CREATE', 'DELETE', 'DROP', 'INSERT', 'SELECT', 'UPDATE');
+    $keywords = array('ALTER', 'CREATE', 'DELETE', 'INSERT', 'SELECT', 'UPDATE');
 
-    $blacklist = array('=', ';', '--', '/*', '*/', 'UNION', 'OR');
+    $blacklist = array('=', ';', '--', '/*', '*/', 'UNION');
 
     preg_match('/\b(' . implode('|', $keywords) . ')\b\s+/i', $sql, $matches);
     if (!empty($matches)) {

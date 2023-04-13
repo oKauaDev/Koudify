@@ -1,5 +1,38 @@
 <?php
 
+use Routers\Routers;
+
+// Esse código é para tratar os erros melhor.
+set_error_handler("errorHandler");
+
+set_exception_handler(function ($exception) {
+  $error = [
+    'message' => $exception->getMessage(),
+    'code' => $exception->getCode(),
+    'file' => $exception->getFile(),
+    'line' => $exception->getLine(),
+  ];
+  echo json_encode($error);
+  header('Content-Type: application/json');
+  http_response_code(500);
+});
+
+
+function errorHandler($errno, $errstr, $errfile, $errline)
+{
+  http_response_code(500);
+  header('Content-Type: application/json');
+  echo json_encode(
+    array(
+      'message' => $errstr,
+      'code' => $errno,
+      'file' => $errfile,
+      'line' => $errline
+    )
+  );
+}
+
+
 // Configurando as configurações.
 $KD_SETTINGS = json_decode(file_get_contents("../settings.json"), true);
 header("Content-Type: application/json");
@@ -14,7 +47,7 @@ if ($KD_SETTINGS["cors"]["enable"] ?? false) {
     exit(0);
   }
 }
-use Routers\Routers;
+
 
 require("env.php");
 loadEnv("../.env");

@@ -8,9 +8,10 @@ use Security\BSP;
 use Security\JKT;
 use Security\PEK;
 use Controllers\Models;
+use Controllers\HttpBase;
 use Exception;
 
-class ControllerBase implements Models
+class ControllerBase extends HttpBase implements Models
 {
 
   private ?string $token = null;
@@ -45,7 +46,7 @@ class ControllerBase implements Models
 
   public function onPluginLoad(string $plugin, bool $status): void
   {
-    // Essa função será executada quando uma lib for carregada
+    // Essa função será executada quando uma plugin for carregada
   }
 
   /**
@@ -83,9 +84,25 @@ class ControllerBase implements Models
   /**
    * @return string
    */
-  public function getToken(): string
+  public function getToken(): ?string
   {
     return $this->token;
+  }
+
+  /**
+   * @return array
+   */
+  public function getAllTokens(): array
+  {
+    $tokens = [
+      'bearer' => $this->token,
+      'authorization' => $_SERVER['AUTHORIZATION'] ?? null,
+      'authentication' => $_SERVER['AUTHENTICATION'] ?? null,
+      'api_token' => $_SERVER['API_TOKEN'] ?? null,
+      'session_token' => $_SESSION['TOKEN'] ?? null,
+    ];
+
+    return $tokens;
   }
 
   /**

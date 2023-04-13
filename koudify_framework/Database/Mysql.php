@@ -31,6 +31,7 @@ class Mysql
   {
     try {
       $this->dbh = new PDO("mysql:host=$this->host;dbname=$this->dbname", $this->user, $this->password);
+      $this->dbh->exec("set names utf8mb4");
     } catch (PDOException $e) {
       die($e);
     }
@@ -87,9 +88,10 @@ class Mysql
   public function fecthAll(
     string $query,
     array $params = [],
+    ?int $mode = PDO::FETCH_DEFAULT
   ): array {
     $stmt = $this->execute($query, $params);
-    return $stmt->fetchAll();
+    return $stmt->fetchAll($mode);
   }
 
   public function close(): void

@@ -34,14 +34,13 @@ class PEK
     }
 
     // Return the hashed password with the salt appended to it
-    return $this->base124_encode($hashedPassword . ':' . $salt);
+    return $hashedPassword . '@!@' . $salt;
   }
 
   public function validate(string $password, string $hash): bool
   {
-    $hash = $this->base124_decode($hash);
     // Split the hash into the hashed password and the salt
-    $parts = explode(':', $hash);
+    $parts = explode('@!@', $hash);
 
     if (count($parts) !== 2) {
       return false;
@@ -55,40 +54,5 @@ class PEK
 
     // Verify the hashed password against the salted password
     return password_verify($saltedPassword, $hashedPassword);
-  }
-
-  private function base124_encode(string $date): string
-  {
-    $nonce = random_bytes(12);
-
-    $cipher = openssl_encrypt(
-      $date,
-      'aes-256-gcm',
-      $_ENV["UNIQUE_HASH_KEY"],
-      OPENSSL_RAW_DATA,
-      $nonce,
-      $tag
-    );
-
-    return $nonce . $cipher . $tag;
-  }
-
-  private function base124_decode(string $date): string
-  {
-
-    $nonce = substr($date, 0, 12);
-    $cipher = substr($date, 12, -16);
-    $tag = substr($date, -16);
-
-    $decrypt = openssl_decrypt(
-      $cipher,
-      'aes-256-gcm',
-      $_ENV["UNIQUE_HASH_KEY"],
-      OPENSSL_RAW_DATA,
-      $nonce,
-      $tag
-    );
-
-    return $decrypt;
   }
 }

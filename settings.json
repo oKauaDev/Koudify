@@ -4,69 +4,9 @@
     "domains": ["http://localhost:3000"]
   },
   "routers": {
-    "/user/register": {
-      "class": "Register",
-      "path": "User/Register",
-      "request": ["post"]
-    },
-    "/user/verification": {
-      "class": "Verification",
-      "path": "User/Verification",
-      "request": ["post", "put"]
-    },
-    "/user/login": {
-      "class": "Login",
-      "path": "User/Login",
-      "request": ["post", "put"]
-    },
-    "/user/auth": {
-      "class": "Auth",
-      "path": "User/Auth",
-      "request": ["get"]
-    },
-    "/user/edit": {
-      "class": "Edit",
-      "path": "User/Edit",
-      "request": ["put"]
-    },
-    "/user/site": {
-      "class": "PublicSite",
-      "path": "User/PublicSite",
-      "request": ["post"]
-    },
-    "/user/:id": {
-      "class": "User",
-      "path": "User/User",
-      "request": ["get"]
-    },
-    "/ticket/create": {
-      "class": "Create",
-      "path": "Ticket/Create",
-      "request": ["post"]
-    },
-    "/ticket/message/:id": {
-      "class": "SendMessage",
-      "path": "Ticket/SendMessage",
-      "request": ["put"]
-    },
-    "/ticket/:id": {
-      "class": "Ticket",
-      "path": "Ticket/Ticket",
-      "request": ["get"]
-    },
-    "/ticket/delete/:id": {
-      "class": "DeleteTicket",
-      "path": "Ticket/DeleteTicket",
-      "request": ["delete"]
-    },
-    "/files/upload": {
-      "class": "Upload",
-      "path": "files/Upload",
-      "request": ["post"]
-    },
-    "/files/:file": {
-      "class": "Download",
-      "path": "files/Download",
+    "/": {
+      "class": "MainController",
+      "path": "Main/MainController",
       "request": ["get"]
     }
   }
