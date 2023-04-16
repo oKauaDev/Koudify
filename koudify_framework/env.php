@@ -1,22 +1,23 @@
 <?php
 
-function loadEnv($envPath)
-{
-  $env = [];
-  $handle = fopen($envPath, "r");
+declare(strict_types=1);
 
-  if ($handle) {
-    while (($line = fgets($handle)) !== false) {
-      $line = trim($line);
-      if ($line && $line[0] !== "#") {
-        $parts = explode("=", $line, 2);
-        $env[$parts[0]] = isset($parts[1]) ? $parts[1] : "";
-      }
-    }
-    fclose($handle);
-  }
+function loadEnv($envPath) {
+	$env = [];
+	$handle = fopen($envPath, "r");
 
-  foreach ($env as $key => $value) {
-    $_ENV[$key] = $value;
-  }
+	if ($handle) {
+		while (($line = fgets($handle)) !== false) {
+			$line = trim($line);
+			if ($line && $line[0] !== "#") {
+				$parts = explode("=", $line, 2);
+				$env[$parts[0]] = isset($parts[1]) ? $parts[1] : "";
+			}
+		}
+		fclose($handle);
+	}
+
+	foreach ($env as $key => $value) {
+		$_ENV[$key] = $value;
+	}
 }
