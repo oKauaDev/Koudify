@@ -1,20 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 use Controllers\ControllerBase;
-use Teste\Main;
+use Teste\Main as Teste;
 
+class MainController extends ControllerBase {
 
-class MainController extends ControllerBase
-{
-  /**
-   * Summary of onLoad
-   * @return void
-   */
-  public function onLoad(): void
-  {
-    $this->loadPlugins(["Teste"]);
-    $hash = $this->getPEK()->encrypt("Kaua10052006ç");
-    var_dump(["hash" => $hash, "conseguiu?" => $this->getPEK()->validate("Kaua10052006ç", $hash) ? "Sim" : "Não"]);
-    // $this->feedback(self::ERROR_200_OK, "Usuário criado", true);
-  }
+	/**
+	 * Método chamado assim que o Controller é chamado.
+	 */
+	public function onLoad(): void {
+		// Carregar os plugins
+		$this->loadPlugins(["Teste"]);
+	}
+
+	/**
+	 * Método chamado assim que um plugin é carregado.
+	 */
+	public function onPluginLoad(string $name, bool $status): void {
+		// recomendamos utilizar switch.
+		switch ($name) {
+			case 'Teste':
+				// Lembre-se que é nescessário criar a classe, o loadPlugins apenas importa o plugin.
+				$plugin = new Teste();
+				$this->output($plugin->getMessage());
+				break;
+		}
+	}
 }
