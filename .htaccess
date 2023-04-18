@@ -1,5 +1,23 @@
+Options -Indexes
+ServerSignature Off
+DirectoryIndex index.php
+
+# Bloquear acesso a arquivos específicos
+<FilesMatch "(^\.env$|\.htaccess|settings\.json)">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# Proteção contra ataques de cross-site scripting (XSS)
+<IfModule mod_headers.c>
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
 RewriteEngine On
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ koudify_framework/index.php?url=$1 [QSA,L]
+RewriteRule ^(.*)$ ./koudify_framework/index.php?url=$1 [QSA,L]
+
