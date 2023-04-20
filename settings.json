@@ -4,10 +4,15 @@
     "domains": ["http://localhost:3000"]
   },
   "routers": {
-    "/": {
+    "/teste": {
       "class": "MainController",
       "path": "Main/MainController",
-      "request": ["get"]
+      "request": ["get"],
+      "request_limit": {
+        "seconds": 120,
+        "requestPerSecounds": 5,
+        "cooldown": 30
+      }
     }
   }
 }

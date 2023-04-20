@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Routers;
 
 use Exception;
+use Requests\RequestLimit;
+
 use function apache_request_headers;
 use function array_combine;
 use function array_keys;
@@ -59,6 +61,20 @@ class Routers {
 		$url = rtrim($this->base, "/") . "/" . ltrim($url, "/");
 		if (isset($this->routes)) {
 			foreach ($this->routes as $route => $urlSettings) {
+				if (isset($urlSettings["request_limit"])) {
+					$rl = $urlSettings["request_limit"];
+					$request_limit = new RequestLimit($rl["seconds"] ?? 120, $rl["requestPerSecounds"] ?? 5, $rl["cooldown"] ?? 3600);
+					$params = $request_limit->addRequest();
+					if ($request_limit->ipInCooldown($params)) {
+						$retorno = [
+							"code" => 429,
+							"message" => "[FRAMEWORK] You made many requests in " . ($rl["seconds"] ?? 120) . " seconds, wait " . ($rl["cooldown"] ?? 3600) . " to make a new request"
+						];
+						http_response_code(429);
+						echo json_encode($retorno);
+						return false;
+					}
+				}
 				$file_path = $controllersDir . "/" . $urlSettings["path"] . ".php";
 				if (!file_exists($file_path)) {
 					throw new Exception("File $file_path not exists");

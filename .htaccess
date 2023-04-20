@@ -3,10 +3,19 @@ ServerSignature Off
 DirectoryIndex index.php
 
 # Bloquear acesso a arquivos específicos
-<FilesMatch "(^\.env$|\.htaccess|settings\.json)">
+<FilesMatch "(^\.env$|\.htaccess|settings\.json|\.rl$)">
   Order allow,deny
   Deny from all
 </FilesMatch>
+
+# Evitar ataques de interceptação de rede
+<IfModule mod_headers.c>
+Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+Header always append X-Frame-Options SAMEORIGIN
+Header always set X-XSS-Protection "1; mode=block"
+Header always set X-Content-Type-Options "nosniff"
+Header always set Content-Security-Policy "default-src 'self' 'unsafe-inline';"
+</IfModule>
 
 # Proteção contra ataques de cross-site scripting (XSS)
 <IfModule mod_headers.c>

@@ -34,6 +34,7 @@ function errorHandler($errno, $errstr, $errfile, $errline) {
 
 // Configurando as configurações.
 $KD_SETTINGS = json_decode(file_get_contents("../settings.json"), true);
+
 header("Content-Type: application/json");
 
 // Solução para o CORS
@@ -50,6 +51,15 @@ if ($KD_SETTINGS["cors"]["enable"] ?? false) {
 require("env.php");
 loadEnv("../.env");
 
+// Criptografando o token ADMIN
+$options = [
+	'memory_cost' => 1024,
+	'time_cost' => 4,
+	'threads' => 2
+];
+
+$GLOBALS["ADMIN_TOKEN"] = password_hash($_ENV["ADMIN_TOKEN"], PASSWORD_ARGON2ID, $options);
+
 // carregar todas as classes do projeto.
 require("Routers/Routers.php");
 require("Controllers/ControllerBase.php");
@@ -57,6 +67,7 @@ require("Security/BSP.php");
 require("Security/JKT.php");
 require("Security/PEK.php");
 require("Database/Mysql.php");
+require("Requests/RequestLimit.php");
 
 $GLOBALS["mysql"] = [
 	"host" => $_ENV["MYSQL_HOST"],

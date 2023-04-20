@@ -28,6 +28,7 @@ use function header_remove;
 use function http_response_code;
 use function is_array;
 use function json_encode;
+use function password_verify;
 use function preg_match;
 use function realpath;
 use function setcookie;
@@ -198,6 +199,10 @@ class ControllerBase implements Models {
 
 	public function getPEK(): PEK {
 		return $this->getPasswordEncriptionKoudify();
+	}
+
+	public function isValidAdminToken(string $token): bool {
+		return password_verify($token, $GLOBALS["ADMIN_TOKEN"]);
 	}
 
 	public function loadPlugins(array $plugins = []): void {
