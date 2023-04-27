@@ -28,5 +28,5 @@ RewriteEngine On
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ ./koudify_framework/index.php?url=$1 [QSA,L]
+RewriteRule ^(.*)$ ./koudify_framework/App.php?url=$1 [QSA,L]
 

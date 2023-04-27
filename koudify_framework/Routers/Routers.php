@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Routers;
 
+use CORS\CORS;
 use Exception;
 use Requests\RequestLimit;
 
@@ -13,12 +14,14 @@ use function array_keys;
 use function array_map;
 use function array_shift;
 use function array_values;
+use function count;
 use function explode;
 use function file_exists;
 use function file_get_contents;
 use function function_exists;
 use function http_response_code;
 use function in_array;
+use function is_array;
 use function json_decode;
 use function json_encode;
 use function ltrim;
@@ -29,6 +32,7 @@ use function rtrim;
 use function str_replace;
 use function strpos;
 use function strtoupper;
+use function token_get_all;
 use function trim;
 
 class Routers {
@@ -61,6 +65,9 @@ class Routers {
 		$url = rtrim($this->base, "/") . "/" . ltrim($url, "/");
 		if (isset($this->routes)) {
 			foreach ($this->routes as $route => $urlSettings) {
+				$cors = new CORS($urlSettings);
+				$cors->initialize();
+
 				if (isset($urlSettings["request_limit"])) {
 					$rl = $urlSettings["request_limit"];
 					$request_limit = new RequestLimit($rl["seconds"] ?? 120, $rl["requestPerSecounds"] ?? 5, $rl["cooldown"] ?? 3600);
@@ -101,7 +108,10 @@ class Routers {
 						}
 						require_once($file_path);
 						$token = $this->getBearerToken();
-						$class = new $urlSettings["class"]($token, $body, $array_params);
+
+						$className = $this->get_first_class_name($file_path);
+
+						$class = new $className($token, $body, $array_params);
 						$class->onLoad();
 						return !!$class;
 					} else {
@@ -116,6 +126,23 @@ class Routers {
 			}
 		}
 		return false;
+	}
+
+	function get_first_class_name(string $filename): ?string {
+		$tokens = token_get_all(file_get_contents($filename));
+		foreach ($tokens as $index => $token) {
+			if (is_array($token) && $token[0] === T_CLASS) {
+				// Encontrou a definição de uma classe
+				for ($i = $index + 1; $i < count($tokens); $i++) {
+					if (is_array($tokens[$i]) && $tokens[$i][0] === T_STRING) {
+						// Encontrou o nome da classe
+						return $tokens[$i][1];
+					}
+				}
+				break;
+			}
+		}
+		return null;
 	}
 
 	private function getRouteParts(string $route): array {

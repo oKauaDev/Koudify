@@ -1,13 +1,10 @@
 {
-  "cors": {
-    "enable": true,
-    "domains": ["http://localhost:3000"]
-  },
   "routers": {
     "/teste": {
       "class": "MainController",
       "path": "Main/MainController",
       "request": ["get"],
+      "cors": "http://localhost:3000",
       "request_limit": {
         "seconds": 120,
         "requestPerSecounds": 5,
