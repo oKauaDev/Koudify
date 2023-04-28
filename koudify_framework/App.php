@@ -24,17 +24,7 @@ class App {
 		// Esse código é para tratar os erros melhor.
 		set_error_handler([$this, 'errorHandler']);
 
-		set_exception_handler(function($exception) {
-			$error = [
-				'message' => $exception->getMessage(),
-				'code' => $exception->getCode(),
-				'file' => $exception->getFile(),
-				'line' => $exception->getLine(),
-			];
-			echo json_encode($error);
-			header('Content-Type: application/json');
-			http_response_code(500);
-		});
+		set_exception_handler([$this, 'exceptionHandler']);
 
 		// Configurando as configurações.
 		$KD_SETTINGS = json_decode(file_get_contents("../settings.json"), true);
@@ -97,7 +87,7 @@ class App {
 		}
 	}
 
-	public function errorHandler($errno, $errstr, $errfile, $errline) {
+	public function errorHandler($errno, $errstr, $errfile, $errline): void {
 		http_response_code(500);
 		header('Content-Type: application/json');
 		echo json_encode(
@@ -109,7 +99,20 @@ class App {
 			]
 		);
 	}
+
+	public function exceptionHandler($exception): void {
+		$error = [
+			'message' => $exception->getMessage(),
+			'code' => $exception->getCode(),
+			'file' => $exception->getFile(),
+			'line' => $exception->getLine(),
+		];
+		echo json_encode($error);
+		header('Content-Type: application/json');
+		http_response_code(500);
+	}
 }
 
+// Inicializando o framework.
 $app = new App();
 $app->run();
